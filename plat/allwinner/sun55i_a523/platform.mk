@@ -20,3 +20,8 @@ include plat/allwinner/common/allwinner-common-a55.mk
 
 # Put NOBITS memory in the first 64K of SRAM A2, overwriting U-Boot's SPL.
 SEPARATE_NOBITS_REGION	:=	1
+
+# DL48 #1212: BL31 in DRAM amends the DTB (reserved-memory), which needs the FDT wrappers.
+ifeq (${SUNXI_BL31_IN_DRAM},1)
+BL31_SOURCES		+=	common/fdt_wrappers.c
+endif

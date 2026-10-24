@@ -15,8 +15,9 @@
 
 #ifdef SUNXI_BL31_IN_DRAM
 
-#define BL31_BASE			SUNXI_DRAM_BASE
-#define BL31_LIMIT			(SUNXI_DRAM_BASE + 0x40000)
+/* DL48 #1212: the kernel DT reserves 0x48000000 for BL31; 0x40000000 is free RAM to Linux. */
+#define BL31_BASE			(SUNXI_DRAM_BASE + 0x08000000)
+#define BL31_LIMIT			(BL31_BASE + 0x40000)
 
 #define MAX_XLAT_TABLES			4
 #define PLAT_VIRT_ADDR_SPACE_SIZE	(1ULL << 32)
@@ -72,7 +73,12 @@
 #define PLATFORM_CLUSTER_COUNT		U(1)
 #define PLATFORM_CORE_COUNT		(PLATFORM_CLUSTER_COUNT * \
 					 PLATFORM_MAX_CPUS_PER_CLUSTER)
+#ifdef SUNXI_BL31_IN_DRAM
+/* DL48 #1212: 0x1000 / 8 cores = 512 B each, which overflows into .data. */
+#define PLATFORM_STACK_SIZE		0x1000
+#else
 #define PLATFORM_STACK_SIZE		(0x1000 / PLATFORM_CORE_COUNT)
+#endif
 
 #ifndef SPD_none
 #ifndef BL32_BASE
